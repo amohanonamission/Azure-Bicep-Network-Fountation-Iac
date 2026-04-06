@@ -17,11 +17,15 @@ az deployment sub create \
   --template-file main.bicep
 
 ```
+
+\
+
+\
 ## Visual Documentation
 
 ### 1. Bicep Architecture Diagram (VS Code & Azure)
 
-![Architecture Diagram](images/visualizer-diagram.png)
+![Architecture Diagram](images/vscode-visualizer.png)
 ![Azure Portal Visualizer](images/azure-resource-visualizer.png)
 
 ### 2. Deployed Resources (Azure Portal)
