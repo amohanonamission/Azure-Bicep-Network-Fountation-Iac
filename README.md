@@ -20,6 +20,7 @@ az deployment sub create \
 ## Visual Documentation
 
 ### 1. Bicep Architecture Diagram (VS Code & Azure)
+
 ![Architecture Diagram](images/visualizer-diagram.png)
 ![Azure Portal Visualizer](images/azure-resource-visualizer.png)
 
