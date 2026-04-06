@@ -19,7 +19,7 @@ az deployment sub create \
 ```
 
 ### Security & Compliance Audit:
-* **Micro-segmentation:** Verified that `snet-db-isolated` has no direct internet route and is logically separated from the `snet-web-frontend`.
+* **Micro-segmentation:** Verified that `snet-db-001` has no direct internet route and is logically separated from the `snet-web-001`.
 * **Traffic Control:** Inbound traffic is strictly restricted to **TCP Port 443** (HTTPS) via NSG rule `AllowHTTPSInbound`.
 * **Operational Integrity:** Subscription-level deployment ensures that the **Resource Group** and **Network** are deployed as a single, immutable unit.
 
