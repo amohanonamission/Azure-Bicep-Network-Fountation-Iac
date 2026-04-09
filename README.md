@@ -1,4 +1,4 @@
-# Enterprise Hub-Spoke Network Foundation (IAC)
+# Azure Enterprise Hub-Spoke Network Foundation (IAC)
 
 ### Objective
 This repository implements a **Secure Hub-Spoke Network Architecture** in Azure using Bicep. It establishes a centralized management **"Hub" and a protected "Spoke"** for application workloads, following the Microsoft Cloud Adoption Framework (CAF) for enterprise-grade security.
