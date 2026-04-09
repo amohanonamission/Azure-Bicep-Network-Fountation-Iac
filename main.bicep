@@ -23,7 +23,7 @@ resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 
 
 // 2. Deploy the Network using a Module
-module networkResources './modules/network.bicep' = {
+module networkResources './network.bicep' = {
   name: 'networkDeployment'
   scope: resourceGroup(rg.name) // Tells the module to deploy INSIDE the new Resource Group
   params: {
@@ -31,3 +31,8 @@ module networkResources './modules/network.bicep' = {
     tags: tags
   }
 }
+
+// 3. Outputs for Reference
+output resourceGroupName string = rg.name
+output spokeVnetName string = networkResources.outputs.spokeVnetId
+output hubVnetName string = networkResources.outputs.hubVnetId
