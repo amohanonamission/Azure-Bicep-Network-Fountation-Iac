@@ -3,13 +3,7 @@
 
 param location string = resourceGroup().location
 param prefix string = 'AMPT2026-Bicep'
-param tags object = {
-    Environment: 'Production'
-    Department: 'Cloud-Ops'
-    Service: 'Network-Foundation'
-    Project: '${prefix}-Project'
-    DeployedBy: 'Arnav-Mohan'
-}
+param tags object
 
 // ==========================================
 // 1. HUB NETWORK (Management & Security)
