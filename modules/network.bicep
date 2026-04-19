@@ -1,8 +1,8 @@
 // AMPT-prod Secure Landing Zone - Infrastructure as Code
 // Architecture: Hub & Spoke with Azure Bastion
 
-param location string = resourceGroup().location
-param prefix string = 'AMPT2026-Bicep'
+param location string
+param prefix string
 param tags object
 
 // ==========================================
@@ -79,6 +79,7 @@ resource nsgWeb 'Microsoft.Network/networkSecurityGroups@2023-05-01' = {
   tags: tags
   properties: {
     securityRules: [
+      // --- INBOUND RULES ---
       {
         name: 'AllowHTTPSInbound'
         properties: {
@@ -98,6 +99,34 @@ resource nsgWeb 'Microsoft.Network/networkSecurityGroups@2023-05-01' = {
           priority: 4096
           access: 'Deny'
           direction: 'Inbound'
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: '*'
+        }
+      }
+
+      // --- OUTBOUND RULES (Egress Hardening) ---
+      {
+        name: 'AllowHTTPSOutbound'
+        properties: {
+          priority: 110
+          access: 'Allow'
+          direction: 'Outbound'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '443'
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: 'Internet'
+        }
+      }
+      {
+        name: 'DenyAllOutbound'
+        properties: {
+          priority: 4000
+          access: 'Deny'
+          direction: 'Outbound'
           protocol: '*'
           sourcePortRange: '*'
           destinationPortRange: '*'
@@ -172,7 +201,21 @@ resource spokeToHubPeering 'Microsoft.Network/virtualNetworks/virtualNetworkPeer
 }
 
 // ==========================================
-// 4. OUTPUTS (For main.bicep and further deployment)
+// 4. Resource Lock (Critical Infrastructure Protection)
+// ==========================================
+
+// Resource Lock on the Hub VNET and Bastion to prevent accidental deletion
+resource hubLock 'Microsoft.Authorization/locks@2020-05-01' = {
+  name: 'Hub-VNet-Delete-Lock'
+  scope: hubVnet // Now we can reference the VNet directly
+  properties: {
+    level: 'CanNotDelete'
+    notes: 'Critical Infrastructure: Prevents accidental deletion of the Hub VNET and Bastion.'
+  }
+}
+
+// ==========================================
+// 5. OUTPUTS (For main.bicep and further deployment)
 // ==========================================
 
 output spokeVnetId string = spokeVnet.id
