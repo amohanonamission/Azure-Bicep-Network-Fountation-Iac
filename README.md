@@ -28,71 +28,6 @@ This repository implements a **Secure Hub-Spoke Network Architecture** in Azure 
 
 ```bash
 az login
-Great catch on the scoping issue. In Bicep, you cannot apply a lock to a "module" symbol directly; you have to apply it to a specific resource.
-
-Since your main.bicep is at the subscription scope (to create the Resource Group) and your VNet is inside the resource group scope, the most efficient way to handle this is to move the Resource Lock into the network.bicep file. This way, the lock is applied exactly where the resource lives.
-
-Here is the corrected flow for your "Training Camp" update:
-
-1. Updating main.bicep
-We will remove the lock from here and simply pass the parameters down.
-
-Code snippet
-targetScope = 'subscription'
-
-param rgName string
-param location string
-param prefix string
-param tags object
-
-// 1. Create Resource Group
-resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: rgName
-  location: location
-  tags: tags
-} 
-
-// 2. Deploy the Network using a Module
-module networkResources './modules/network.bicep' = {
-  name: 'networkDeployment'
-  scope: resourceGroup(rg.name) 
-  params: {
-    location: location
-    prefix: prefix
-    tags: tags
-  }
-}
-
-// 3. Outputs for Reference
-output resourceGroupName string = rg.name
-output spokeVnetId string = networkResources.outputs.spokeVnetId
-output hubVnetId string = networkResources.outputs.hubVnetId
-2. Updating network.bicep (The "Hardened" Logic)
-Add the lock at the bottom of this file. Since this file is already at the Resource Group scope, it can "see" the hubVnet directly.
-
-Code snippet
-// ... (Keep your Hub VNet, Bastion, and Peering code as is) ...
-
-// [ADD THIS AT THE END OF network.bicep]
-
-// Resource Lock on the Hub VNET
-resource hubLock 'Microsoft.Authorization/locks@2020-05-01' = {
-  name: 'Hub-VNet-Delete-Lock'
-  scope: hubVnet // Now we can reference the VNet directly
-  properties: {
-    level: 'CanNotDelete'
-    notes: 'Critical Infrastructure: Prevents accidental deletion of the Hub VNET and Bastion.'
-  }
-}
-
-output hubVnetId string = hubVnet.id
-output spokeVnetId string = spokeVnet.id
-3. How to use parameters.json
-To make the Bicep file "consume" the JSON, you don't actually change the code to point to the file. Instead, you tell the Azure CLI to use that file when you run the command.
-
-The Deployment Command:
-
-Bash
 az deployment sub create \
   --location centralindia \
   --template-file main.bicep \
@@ -122,6 +57,6 @@ az deployment sub create \
 ### 3. Security Hardening (NSG Rules)
 ![NSG Security Rules](images/nsg-rules.png)
 
-### 4. Resource Lock
+### 4. Resource Lock 
 ![Resource Lock](images/resource-lock.png)
 
