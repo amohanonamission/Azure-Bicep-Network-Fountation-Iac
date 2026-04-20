@@ -38,9 +38,11 @@ az deployment sub create \
 ### Security & Compliance Audit:
 
 * **Public IP Reduction:** Public IPs are restricted to the Bastion service only; no workload resources are exposed to the public internet.
+* **Operational Integrity:** Implemented CanNotDelete Resource Locks on core infrastructure (Hub VNET) to prevent accidental deletion and ensure high availability of the management plane.
 * **Management Plane Isolation:** Management traffic is physically and logically separated from the data plane.
 * **Encryption in Transit:** VNET Peering traffic stays on the Microsoft backbone and is not exposed to the public internet.
 * **Traffic Control:** Inbound traffic is strictly restricted to **TCP Port 443** (HTTPS) via NSG rule `AllowHTTPSInbound`.
+* **Egress Hardening:** Enforced an explicit DenyAllOutbound NSG policy. Only authorized traffic (HTTPS/443) is permitted to exit the network, mitigating the risk of data exfiltration and Command & Control (C2) callbacks.
 * **Micro-segmentation:** Verified that `snet-db-001` has no direct internet route and is logically separated from the `snet-web-001`.
 
 ## Visual Documentation
